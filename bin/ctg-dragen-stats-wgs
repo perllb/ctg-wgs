@@ -1,0 +1,136 @@
+#!/bin/bash
+
+usage() {
+
+    echo "Usage: ctg-dragen-stats-wgs -p projid -i dragen-outputdir -o stats-outdir"
+    echo ""
+    echo " Example "
+    echo "ctg-dragen-stats-wgs \ "
+    echo "      -p 2021_046 \ "
+    echo "      -i /projects/fs1/nas-sync/ctg-delivery/wgs/210505_0358-wgs/2021_046/dragen \ "
+    echo "      -o /projects/fs1/nas-sync/ctg-delivery/wgs/210505_0358-wgs/2021_046/qc/dragen "
+    echo ""
+}
+
+exit_abnormal() {
+    usage
+    exit 1
+}
+
+# Read and control input arguments 
+while getopts p:i:o:h opt; do
+    case $opt in
+	p) projid=$OPTARG
+	    ;;
+	i) dragendir=$OPTARG
+	    ;;
+	o) outdir=$OPTARG
+	    ;;
+	h) exit_abnormal
+	    ;;
+	\?) echo "> Error: Invalid option -$OPTARG" >&2
+	    exit_abnormal ;;
+	:) echo "> Error: -${OPTARG} requires an argument "
+	    exit_abnormal ;;
+    esac
+done
+
+if [ -z $projid ];then
+    echo "No Projid -p specified!"
+    exit_abnormal
+fi
+if [ -z $dragendir ];then
+    echo "No Dragen dir -i specified!"
+    exit_abnormal
+fi
+if [ -z $outdir ];then
+    echo "No outdir -o specified!"
+    exit_abnormal
+fi
+
+mkdir -p $outdir
+
+echo "" > ${outdir}/${projid}.stats_avg.cov.txt
+echo "" > ${outdir}/${projid}.stats_uniform.cov.txt
+echo "" > ${outdir}/${projid}.stats_aligned.reads.txt
+echo "" > ${outdir}/${projid}.stats_merged.csv
+
+echo "ID,Avg_Cov,Uniformity,Aligned_reads,Q30" > ${outdir}/${projid}.stats_merged.csv
+
+for file in $(ls ${dragendir}/*/*wgs_coverage_metrics.csv )
+do 
+
+    id=$(basename $file .wgs_coverage_metrics.csv )
+
+    ## Average coverage
+    avgcov=$(cat $file | grep "Average alignment coverage" | cut -f4 -d",")
+    echo "$id,$b" >> ${outdir}/${projid}.stats_avg.cov.txt
+    
+    ## Uniform
+    unif=$(cat $file | grep "Uniformity" | cut -f4 -d",")
+    echo "$id,$c" >> ${outdir}/${projid}.stats_uniform.cov.txt
+    
+    ## Aligned reads
+    alnrea=$(cat $file | grep "Aligned reads," | cut -f4 -d",")
+    echo "$id,$alnrea" >> ${outdir}/${projid}.stats_aligned.reads.txt
+    
+    ## Q30 bases
+    mmet="${dragendir}/${id}/$id.mapping_metrics.csv"
+    q30=$(cat $mmet | grep "Q30 bases," | grep SUMMARY | cut -f5 -d",")
+    echo "$id,$g" >> ${outdir}/${projid}.stats_Q30.bases.txt
+    
+    echo "$id,${alnrea},${avgcov}x,${q30}%,${unif}" >> ${outdir}/${projid}.stats_merged.csv
+
+done
+
+## Create multiqc report format
+mqcfile=${outdir}/$projid.dragen_stats_mqc.txt
+
+echo "# plot_type: 'table'" > $mqcfile
+echo "# section_name: 'CTG - WGS Metrics Summary'" >> $mqcfile 
+echo "# description: 'CTG - WGS metrics based on DRAGEN alignment.'" >> $mqcfile 
+echo "# pconfig:" >> $mqcfile
+echo "#     namespace: 'CTG DRAGEN'" >> $mqcfile  
+echo "# headers:" >> $mqcfile
+echo "#     col1:" >> $mqcfile
+echo "#         title: 'Sample'" >> $mqcfile 
+echo "#         description: 'Sample ID'" >> $mqcfile 
+echo "#         format: '{:s}'"  >> $mqcfile 
+echo "#     col2:" >> $mqcfile
+echo "#         title: 'Aligned Reads'" >> $mqcfile 
+echo "#         description: 'Total Aligned Reads to Reference genome'" >> $mqcfile 
+echo "#         format: '{:,.0f}'" >> $mqcfile 
+echo "#     col3:" >> $mqcfile
+echo "#         title: 'Average Coverage'" >> $mqcfile 
+echo "#         description: 'Average Coverage across genome'" >> $mqcfile 
+echo "#         format: '{:.1f}'" >> $mqcfile 
+echo "#         suffix: 'x'" >> $mqcfile 
+echo "#     col4:" >> $mqcfile
+echo "#         title: 'Q30'" >> $mqcfile 
+echo "#         description: 'Percentage of bases above Q30'" >> $mqcfile 
+echo "#         min: 0 " >> $mqcfile
+echo "#         max: 100 " >> $mqcfile
+echo "#         format: '{:.1f}'" >> $mqcfile 
+echo "#         suffix: '%'" >> $mqcfile 
+echo "#     col5:" >> $mqcfile
+echo "#         title: 'Uniformity'" >> $mqcfile 
+echo "#         description: 'Uniformity of coverage'" >> $mqcfile 
+echo "#         format: '{:.2f}'" >> $mqcfile 
+echo "#         min: 0 " >> $mqcfile
+echo "#         max: 100 " >> $mqcfile
+
+
+echo "Sample_ID,col2,col3,col4,col5" >> $mqcfile
+sed 's/,col/\tcol/g' $mqcfile > tmp.txt
+mv tmp.txt $mqcfile
+
+# Remove % and x from stats csv
+sed 's/%//g' ${outdir}/${projid}.stats_merged.csv | sed 's/x,/,/g' | sed -e "1d"  > tmp.txt 
+
+sed 's/,/\t/g' tmp.txt > tmp.2.txt
+mv tmp.2.txt tmp.txt
+
+# Concatenate with mqc header
+cat  $mqcfile tmp.txt  > tmp.2.txt 
+mv tmp.2.txt $mqcfile
+rm tmp.txt

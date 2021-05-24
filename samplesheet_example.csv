@@ -1,0 +1,24 @@
+[Header]
+IEMFileVersion,5
+Date,2021-05-12
+Workflow,GenerateFASTQ
+Application,NovaSeq FASTQ Only
+Instrument Type,NovaSeq
+Assay,Illumina DNA PCR-Free 2x151
+Index Adapters,"IDT-Ilmn DNA-RNA UD Indexes SetA Tagmentation - ILMN PCR-Free"
+Chemistry,Amplicon
+
+[Reads]
+151
+151
+
+[Settings]
+Adapter,CTGTCTCTTATACACATCTCCGAGCCCACGAGAC+ATGTGTATAAGAGACA
+AdapterRead2,CTGTCTCTTATACACATCTCGCAGGGGATAGTCAGATGACGCTGCCGACGA+ATGTGTATAAGAGACA
+
+[Data]
+Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_Plate_Well,I7_Index_ID,index,I5_Index_ID,index2,Sample_Project,Sample_Species
+1_NA24385_300ng,,,,A01,UDP0001,GAACTGAGCG,UDP0001,CGCTCCACGA,2021_060,hg38
+2_NA24385_300ng,,,,B01,UDP0002,AGGTCAGATA,UDP0002,TATCTTGTAG,2021_060,hg38
+S1,,,,A02,UDP0009,GACTGAGTAG,UDP0009,CACTATCAAC,projectY,mm10
+S2,,,,B02,UDP0010,AGTCAGACGA,UDP0010,TGTCGCTGGT,projectT,mm10
