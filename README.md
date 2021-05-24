@@ -18,8 +18,8 @@
 
 ## Specs
 - Dragen version: 3.8 
-    - User guide: (https://support.illumina.com/content/dam/illumina-support/documents/documentation/software_documentation/dragen-bio-it/Illumina-DRAGEN-Bio-IT-Platform-User-Guide-1000000141465-00.pdf). 
-    - Relase notes: (https://support.illumina.com/content/dam/illumina-support/documents/downloads/software/dragen/Illumina-DRAGEN-Bio-IT-Platform-3.7-Release-Notes-1000000142362-v00.pdf)
+    - User guide: (https://support-docs.illumina.com/SW/DRAGEN_v38/Content/SW/DRAGEN/GPipelineIntro_fDG.htm). 
+    - Relase notes: (https://jp.support.illumina.com/content/dam/illumina-support/documents/downloads/software/dragen/1000000157666_00_DRAGEN-3.8.4-Customer-Release-Notes.pdf)
 
 ## Container
 - `ngs-tools` Singularity container contain NGS-related tools, embedded in the repo: 
