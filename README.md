@@ -29,7 +29,7 @@ https://github.com/perllb/ctg-wgs/tree/master/container
 - Slurm (recommended)
 - Dragen Server
 
-### Reference genomes
+## Reference genomes
 - Reference genomes supported: hg38/hg37 / mm10
 
 
