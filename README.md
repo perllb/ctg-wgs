@@ -17,7 +17,7 @@
       * `dragen`: text files with dragen metrics (compiled to the multiqc report)
 
 ## Specs
-- Dragen version: 3.8 
+- Dragen version: 3.9
     - User guide: (https://support-docs.illumina.com/SW/DRAGEN_v38/Content/SW/DRAGEN/GPipelineIntro_fDG.htm). 
     - Relase notes: (https://jp.support.illumina.com/content/dam/illumina-support/documents/downloads/software/dragen/1000000157666_00_DRAGEN-3.8.4-Customer-Release-Notes.pdf)
 
@@ -30,7 +30,7 @@ https://github.com/perllb/ctg-wgs/tree/master/container
 - Dragen Server
 
 ## Reference genomes
-- Reference genomes supported: hg38/hg37 / mm10
+- Reference genomes supported: hg38/hg19 / mm10
 
 
 
