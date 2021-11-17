@@ -74,7 +74,7 @@ ALL503A1255_24-114140,2020_test_giab_truseq,hg38,y
 ## The following steps are performed by the pipeline:
 
 * `Demultiplexing` (dragen bcl-conversion): Converts raw basecalls to fastq, and demultiplex samples based on index. Adapters sequences are trimmed if added to samplesheet [Settings].
-* `Alignment` and `Variant calling` (dragen align + calling): Fastq from each sample is aligned to the reference genome. Variants (SNV+SV+CNV) are called.
+* `Alignment` and `Variant calling` (dragen align + calling): Fastq from each sample is aligned to the reference genome. Variants (SNV+SV) are called.
 * `Annotation` (nirvana): Clinical grade annotation of all variants passing basic filter in Dragen. 
 * `Dragen metrics`: Compiling Dragen alignment and coverage metrics to table.
 * `MultiQC`: Summarizes FastQC and Dragen metrics into one document (https://multiqc.info/).
