@@ -11,6 +11,7 @@ CTGQC = params.ctgqc
 demux = params.demux
 b2farg = params.bcl2fastq_arg
 index = params.index
+nirvanadir = params.nirvanadir
 
 // Read and process sample sheet
 sheet = file(params.sheet)
@@ -294,12 +295,10 @@ process annotate {
 	set sid, projid, ref, somatic into filter_vcf
 
 	"""
-	nirvanaref=$nirvanadir/$ref/
-
-	vcfdir='${OUTDIR}/${projid}/dragen/$sid'
-
-	outSNV=\$vcfdir/$sid.SNV.annotated.nirvana.txt
-	outSV=\$vcfdir/$sid.SV.annotated.nirvana.txt
+	SNV=\$vcfdir/${sid}.hard-filtered.vcf.gz
+	SV=\$vcfdir/${sid}.sv.vcf.gz
+	outSNV=\$vcfdir/${sid}.SNV.hard-filtered.annotated.nirvana.txt
+	outSV=\$vcfdir/${sid}.SV.annotated.nirvana.txt
 
 	# Convert ref 
 	# hg38 to GRCh38 
@@ -313,11 +312,9 @@ process annotate {
 	fi		
 
 	# SNV annotate
-	/opt/edico/share/nirvana/Nirvana -c \$nirvanaref/Cache/\$Gref/Both -r \$nirvanaref/References/Homo_sapiens.\$Gref.Nirvana.dat --sd \$nirvanaref/SupplementaryAnnotation/\$Gref -i $snv -o \$outSNV
-
+	/opt/edico/share/nirvana/Nirvana -c \$nirvanaref/Cache/\$Gref/Both -r \$nirvanaref/References/Homo_sapiens.\$Gref.Nirvana.dat --sd \$nirvanaref/SupplementaryAnnotation/\$Gref -i \$SNV -o \$outSNV
 	# SV annotate		 
-	/opt/edico/share/nirvana/Nirvana -c \$nirvanaref/Cache/\$Gref/Both -r \$nirvanaref/References/Homo_sapiens.\$Gref.Nirvana.dat --sd \$nirvanaref/SupplementaryAnnotation/\$Gref -i $sv -o \$outSV
-
+	/opt/edico/share/nirvana/Nirvana -c \$nirvanaref/Cache/\$Gref/Both -r \$nirvanaref/References/Homo_sapiens.\$Gref.Nirvana.dat --sd \$nirvanaref/SupplementaryAnnotation/\$Gref -i \$SV -o \$outSV
 	"""
 }
 
