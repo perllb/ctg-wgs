@@ -155,7 +155,7 @@ process demux {
     mkdir -p ${FQDIR}
     /opt/edico/bin/dragen --force --bcl-conversion-only=true \\
            --bcl-input-directory ${runfolder} \\
-	   --output-directory ${FQDIR}/${metaID} \\
+	   --output-directory ${FQDIR} \\
 	   --sample-sheet ${newsheet} \\
 	   --no-lane-splitting true \\
 	   ${b2farg}
@@ -183,17 +183,20 @@ process moveFastq {
     mkdir -p ${OUTDIR}/${projid}/fastq/$sid
 
     # If there is a directory per project
-    if [ -d ${FQDIR}/${projid}/ ]; then
-        if [ -d ${FQDIR}/${projid}/$sid ]; then
-	    mv ${FQDIR}/${projid}/$sid ${OUTDIR}/${projid}/fastq/
-	# If there is a flat structure under project dir
-	else
-	    mv ${FQDIR}/${projid}/$sid* ${OUTDIR}/${projid}/fastq/$sid/
+    if [ -d ${FQDIR} ]; then
+        if [ -d ${FQDIR}/${projid} ]; then
+	    if [ -d ${FQDIR}/${projid}/$sid ]; then
+	    	mv ${FQDIR}/${projid}/$sid ${OUTDIR}/${projid}/fastq/
+    	    else
+		mv ${FQDIR}/${projid}/$sid* ${OUTDIR}/${projid}/fastq/
+	    fi
+        else
+	    mv ${FQDIR}/$sid* ${OUTDIR}/${projid}/fastq/
 	fi
-    # If there is a flat structure with all samples for all projects in one - create a sid folder for each sample
     else
-	mv ${FQDIR}/$sid* ${OUTDIR}/${projid}/fastq/$sid/
+	echo "FQDIR does not exist: ${FQDIR}"
     fi
+
     """
 
 }
@@ -253,8 +256,8 @@ process dragen_align_vc {
         R1=\$(echo $fastqpath/${sid}*_R1_*fastq.gz)
     	R2=\$(echo $fastqpath/${sid}*_R2_*fastq.gz)
     else
-        R1=\$(echo $fastqpath/${sid}/${sid}*_R1_*fastq.gz)
-   	R2=\$(echo $fastqpath/${sid}/${sid}*_R2_*fastq.gz)
+        R1=\$(echo $fastqpath/${sid}*_R1_*fastq.gz)
+   	R2=\$(echo $fastqpath/${sid}*_R2_*fastq.gz)
     fi
 
     outdir=${OUTDIR}/${projid}/dragen/${sid}
@@ -273,7 +276,6 @@ process dragen_align_vc {
         --output-directory \$outdir \\
         --enable-variant-caller true \\
         --enable-sv true \\
-	--enable-cnv true \\
         --output-file-prefix $sid
     
     """

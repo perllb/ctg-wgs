@@ -94,7 +94,7 @@ fi
 # Check meta-id
 if [ -z $id ]; then
     echo "> No meta-ID specified"
-    metaid=$(grep "ProjectID" $sheet | cut -f2 -d"," | tr -d '\n\r')
+    metaid=$(grep "metaid" $sheet | cut -f2 -d"," | tr -d '\n\r')
     if [ -z $metaid ]; then
 	metaid=$(echo $run | cut -f1,3 -d"_")
 	id="${metaid}-wgs"
@@ -115,7 +115,7 @@ if [[ $demux == "n" ]]; then
 	echo " - path exists.."
     fi
 else
-    fastqpath="\${outdir}/fastq"
+    fastqpath="\${outdir}/${id}/fastq"
 fi
 
 # Check if meta-ID already exist
