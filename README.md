@@ -55,6 +55,21 @@ Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_Plate_Well,I7_Index_ID,inde
 9_NA24385_1000ng,,,,A02,UDP0009,GACTGAGTAG,UDP0009,CACTATCAAC,2021_060,hg38,y
 10_NA24385_1000ng,,,,B02,UDP0010,AGTCAGACGA,UDP0010,TGTCGCTGGT,2021_060,hg38,y 
 ```
+## Running without demux (run with existing fastq file):
+
+1. Run wgs-driver with -d flag (turns demux off) : `wgs-driver -d`
+2. Samplesheet (Still called CTG_SampleSheet.ctg-wgs.csv) will have different format:
+- It needs header with `metaid` (name of project/run that will be used to generate "project log folder" etc) and `fastqpath` (which should point to the directory that contain the fastq files).
+- [Data] Section only needs Sample_ID,Sample_Project,Sample_ref,somatic. Same rules as described above applies here.
+
+**Example samplesheet for demux-off analysis**
+```
+metaid,2020_test_giab_truseq
+fastqpath,/projects/fs1/medpvb/proj/wgs/giab/2020_test_giab_CMD_truseq/fastq/
+[Data]
+Sample_ID,Sample_Project,Sample_ref,somatic
+ALL503A1255_24-114140,2020_test_giab_truseq,hg38,y
+```
 
 ## The following steps are performed by the pipeline:
 
